@@ -9,7 +9,10 @@
     "preview": "vite preview",
     "tauri": "tauri",
     "tauri:dev": "cmd /c \"scripts\\vcenv.bat tauri dev\"",
+    "tauri:dev:linux": "bash scripts/tauri-linux.sh dev",
     "tauri:build": "cmd /c \"scripts\\vcenv.bat tauri build\"",
+    "tauri:build:linux": "bash scripts/tauri-linux.sh build",
+    "tauri:check:linux": "bash scripts/tauri-linux.sh cargo check --manifest-path src-tauri/Cargo.toml",
     "tauri:test-installer": "bun scripts/test-installer.mjs",
     "tauri:check": "cmd /c \"cd src-tauri && ..\\scripts\\vcenv.bat cargo check\"",
     "tauri:clean": "cmd /c \"cd src-tauri && cargo clean\"",
@@ -19,7 +22,8 @@
     "test:ui": "playwright test -c e2e/playwright.config.ts",
     "test:ui:update": "playwright test -c e2e/playwright.config.ts --update-snapshots=changed",
     "test:ui:ci": "CI=1 E2E_SOFTWARE=1 playwright test -c e2e/playwright.config.ts",
-    "test:rust": "cmd /c \"cd src-tauri && ..\\scripts\\vcenv.bat cargo test\""
+    "test:rust": "cmd /c \"cd src-tauri && ..\\scripts\\vcenv.bat cargo test\"",
+    "test:rust:linux": "bash scripts/tauri-linux.sh cargo test --manifest-path src-tauri/Cargo.toml"
   },
   "dependencies": {
     "@blobatar/react": "2.7.0",

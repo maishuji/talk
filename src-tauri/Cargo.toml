@@ -69,6 +69,9 @@ base64 = "0.22"
 # itself rather than handing the job to the frontend.
 uuid = { version = "1", features = ["v4"] }
 chrono = "0.4"
+[target.'cfg(target_os = "linux")'.dependencies]
+enigo = { version = "0.2", default-features = false, features = ["x11rb"] }
+keyring = { version = "3", features = ["linux-native-sync-persistent"] }
 # Windows clipboard/input
 [target.'cfg(windows)'.dependencies]
 enigo = "0.2"

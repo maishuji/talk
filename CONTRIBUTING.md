@@ -1,7 +1,7 @@
 # Contributing
 
-Talk is a Tauri v2 desktop client for Windows: a Rust backend around whisper.cpp, a React 19
-frontend. This says how a change gets in, and what is particular to this repository. The shape of
+Talk is a Tauri v2 desktop client for Windows and Debian: a Rust backend around whisper.cpp, a React
+19 frontend. This says how a change gets in, and what is particular to this repository. The shape of
 the flow is the same one the other repositories here follow.
 
 Install the hooks once per clone, before the first commit. Worktrees share the config file, so they
@@ -112,9 +112,12 @@ The two feedback loops are not symmetric, and it is worth knowing which one a ch
     bun run test:ui:ci # the same suite the way the runner runs it
     bun run tauri:check # cargo check, MSVC environment loaded by scripts/vcenv.bat
     bun run test:rust  # cargo test, the same environment
+    bun run tauri:check:linux # cargo check with the Vulkan SDK loaded
+    bun run test:rust:linux  # cargo test with the same environment
 
 `build` and `test` are what the `build` workflow runs, and `test:ui` is what the `interface`
-workflow runs, on Windows. **The Rust side is not compiled in CI**: `whisper-rs` builds
+workflow runs, on Windows. The Linux scripts load the Vulkan SDK before Cargo runs; use them for
+Linux Rust checks and tests. **The Rust side is not compiled in CI**: `whisper-rs` builds
 whisper.cpp from its build script, so even `cargo check` pays a compile measured in tens of minutes.
 A change to `src-tauri/` is checked locally with `tauri:check` and read carefully, or it is answered
 only by the release build.

@@ -1,8 +1,8 @@
-#[cfg(windows)]
+#[cfg(any(windows, target_os = "linux"))]
 use enigo::{Direction, Enigo, Key, Keyboard, Settings};
 
 /// Parse a shortcut string like "Ctrl+Shift+M" and simulate the keypress.
-#[cfg(windows)]
+#[cfg(any(windows, target_os = "linux"))]
 pub fn simulate_keystroke(keys: &str) -> Result<(), String> {
     let mut enigo = Enigo::new(&Settings::default())
         .map_err(|e| format!("Failed to create enigo instance: {e}"))?;
@@ -44,7 +44,7 @@ pub fn simulate_keystroke(keys: &str) -> Result<(), String> {
     Ok(())
 }
 
-#[cfg(windows)]
+#[cfg(any(windows, target_os = "linux"))]
 fn parse_key(s: &str) -> Result<Key, String> {
     match s.to_lowercase().as_str() {
         "space" => Ok(Key::Space),
@@ -77,7 +77,7 @@ fn parse_key(s: &str) -> Result<Key, String> {
     }
 }
 
-#[cfg(not(windows))]
+#[cfg(not(any(windows, target_os = "linux")))]
 pub fn simulate_keystroke(_keys: &str) -> Result<(), String> {
-    Err("Keystroke simulation is only supported on Windows".to_string())
+    Err("Keystroke simulation is unavailable on this platform".to_string())
 }

@@ -1,7 +1,9 @@
 #[cfg(windows)]
 use clipboard_win::{formats, raw, set_clipboard};
+#[cfg(any(windows, target_os = "linux"))]
+use enigo::{Enigo, Keyboard, Settings};
 #[cfg(windows)]
-use enigo::{Enigo, Key, Keyboard, Settings};
+use enigo::Key;
 use thiserror::Error;
 #[cfg(windows)]
 use windows::Win32::UI::Input::KeyboardAndMouse::{
@@ -10,6 +12,7 @@ use windows::Win32::UI::Input::KeyboardAndMouse::{
 
 #[derive(Error, Debug)]
 pub enum ClipboardError {
+    #[cfg(windows)]
     #[error("Failed to set clipboard: {0}")]
     SetClipboard(String),
     #[error("Failed to simulate input: {0}")]
@@ -171,14 +174,29 @@ pub fn type_text(text: &str, preserve_clipboard: bool) -> Result<(), ClipboardEr
     pasted
 }
 
-#[cfg(not(windows))]
-pub fn copy_and_paste(_text: &str) -> Result<(), ClipboardError> {
-    // Not implemented for non-Windows platforms yet
-    Ok(())
+#[cfg(target_os = "linux")]
+pub fn copy_and_paste(text: &str) -> Result<(), ClipboardError> {
+    // Enigo's X11 text entry writes to the focused window without replacing the
+    // user's clipboard. A missing X11 session fails instead of silently losing text.
+    let mut keyboard = Enigo::new(&Settings::default())
+        .map_err(|e| ClipboardError::SimulateInput(e.to_string()))?;
+    keyboard
+        .text(text)
+        .map_err(|e| ClipboardError::SimulateInput(e.to_string()))
 }
 
-#[cfg(not(windows))]
+#[cfg(target_os = "linux")]
+pub fn type_text(text: &str, _preserve_clipboard: bool) -> Result<(), ClipboardError> {
+    copy_and_paste(text)
+}
+
+#[cfg(not(any(windows, target_os = "linux")))]
+pub fn copy_and_paste(_text: &str) -> Result<(), ClipboardError> {
+    Err(ClipboardError::SimulateInput("Text entry is unavailable on this platform".into()))
+}
+
+#[cfg(not(any(windows, target_os = "linux")))]
 pub fn type_text(_text: &str, _preserve_clipboard: bool) -> Result<(), ClipboardError> {
-    Ok(())
+    Err(ClipboardError::SimulateInput("Text entry is unavailable on this platform".into()))
 }
 

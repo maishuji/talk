@@ -1,8 +1,0 @@
-# scripts/vcenv.bat loads the MSVC environment before cargo runs, so cl.exe is on
-# PATH and Ninja picks it up directly. Ninja rather than the Visual Studio generator
-# because it is faster and keeps the nested build paths shorter, which matters for
-# vulkan-shaders-gen.
-[env]
-CC = "cl.exe"
-CXX = "cl.exe"
-CMAKE_GENERATOR = "Ninja"

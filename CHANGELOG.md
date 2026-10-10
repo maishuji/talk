@@ -5,6 +5,15 @@ All notable changes to this project are documented in this file.
 Based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Features
+
+- Run Talk on Debian with Vulkan acceleration
+
+Talk now runs on Debian under X11 and can use Vulkan GPUs for local transcription. A Debian package
+can be built locally; global shortcuts and text entry require an X11 session.
+
 ## [0.12.0] - 2026-10-08
 
 ### Fixes

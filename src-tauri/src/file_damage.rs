@@ -105,7 +105,10 @@ fn previous_of(aside: &Path) -> PathBuf {
 }
 
 fn length(path: &Path) -> Option<u64> {
-    std::fs::metadata(path).ok().map(|meta| meta.len())
+    std::fs::metadata(path)
+        .ok()
+        .filter(|meta| meta.is_file())
+        .map(|meta| meta.len())
 }
 
 fn untold_of(aside_name: &str, dir: &Path) -> PathBuf {

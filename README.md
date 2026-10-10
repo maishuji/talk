@@ -137,8 +137,50 @@ It starts with Windows and lives in the tray, if you want it to.
 
 ## Building
 
-Windows only. The native side compiles whisper.cpp from source, so budget a long first
-build.
+The native side compiles whisper.cpp from source, so budget a long first build.
+
+### Debian (X11)
+
+Install [Tauri's Linux development dependencies](https://v2.tauri.app/start/prerequisites/)
+and the audio, keyboard, and secret-service headers used by Talk:
+
+```bash
+sudo apt update
+sudo apt install build-essential curl wget file libssl-dev libgtk-3-dev \
+  libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev \
+  patchelf libasound2-dev libxkbcommon-dev libdbus-1-dev \
+  cmake ninja-build libvulkan-dev vulkan-tools spirv-headers glslc
+```
+
+Install [Rust](https://rustup.rs/) and [Bun](https://bun.sh/), then from the repository root:
+
+```bash
+bun install
+bun run tauri:dev:linux
+```
+
+The Linux command automatically loads the newest Vulkan SDK it finds under
+`~/vulkan`, `/opt/vulkan`, or `/usr/local/vulkan`. An SDK installed elsewhere can
+be selected by sourcing its `setup-env.sh` first. The launcher also refreshes an
+old whisper.cpp CMake cache when it points at different Vulkan headers.
+
+To make a local `.deb`, run `bun run tauri:build:linux`. The Linux configuration
+selects the Debian bundle and does not create updater artifacts. The app needs an
+X11 session for global shortcuts and typing into the focused window; a Wayland
+session is not supported yet. On Linux, text is entered directly, so the preserve
+clipboard setting has no effect. Meeting mode still requires the Windows VB-Cable
+driver and is unavailable on Linux. Linux builds are not in the release feed yet;
+updates need to be installed from a new package.
+
+Linux builds use Vulkan by default and select the discrete GPU automatically. The
+Vulkan driver must be visible to `vulkaninfo`. Debian 12's Vulkan headers may be
+too old for the current whisper.cpp backend; if the build reports missing
+`LayerSettingEXT` types, install the current [Vulkan SDK](https://vulkan.lunarg.com/sdk/home).
+Extracting it under `~/vulkan/<version>` is enough for the launcher to find it;
+for example, `<version>` can be `1.4.363.0`. For any other location, source its
+`setup-env.sh` before starting Talk.
+
+### Windows
 
 | Requirement | Why | Get it |
 |---|---|---|
@@ -146,7 +188,7 @@ build.
 | Bun | frontend package manager and task runner | [bun.sh](https://bun.sh) |
 | Visual Studio 2022 | the "Desktop development with C++" workload, Community or Build Tools | [visualstudio.microsoft.com](https://visualstudio.microsoft.com/downloads/) |
 | CMake | whisper.cpp is a CMake project | [cmake.org](https://cmake.org/download/) |
-| Ninja | the generator `.cargo/config.toml` asks for | [ninja-build.org](https://ninja-build.org) |
+| Ninja | the CMake generator used by `scripts/vcenv.bat` | [ninja-build.org](https://ninja-build.org) |
 | LLVM | `whisper-rs-sys` generates its bindings with bindgen, which loads `libclang.dll` | [releases.llvm.org](https://releases.llvm.org) |
 | Vulkan SDK | only for the default `vulkan` feature | [vulkan.lunarg.com](https://vulkan.lunarg.com/sdk/home) |
 
@@ -166,8 +208,7 @@ check` without a full build. Use the `tauri:` scripts rather than calling `tauri
 directly: they go through `scripts/vcenv.bat`, which loads the MSVC environment CMake
 needs.
 
-To build without a GPU backend, and skip the Vulkan SDK entirely, drop the default
-feature:
+To build without a GPU backend, disable the default `vulkan` feature:
 
 ```bash
 cargo build --manifest-path src-tauri/Cargo.toml --no-default-features
