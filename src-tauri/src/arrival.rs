@@ -112,6 +112,7 @@ pub enum Side {
 /// What a movement is played on: the window, the corner it rests at, the scale of its screen
 /// and the side it comes from.
 #[derive(Debug, Clone, Copy)]
+#[cfg_attr(not(windows), allow(dead_code))]
 pub struct Stage {
     pub window: isize,
     pub rest: (i32, i32),
@@ -121,6 +122,7 @@ pub struct Stage {
 
 impl Stage {
     /// The corner of the window when it stands that far from its place.
+    #[cfg_attr(not(windows), allow(dead_code))]
     fn corner(&self, standing: Standing) -> (i32, i32) {
         let shift = (standing.away * self.scale).round() as i32;
         let (x, y) = self.rest;
